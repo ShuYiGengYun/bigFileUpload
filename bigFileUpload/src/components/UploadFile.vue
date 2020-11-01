@@ -5,12 +5,13 @@
            上传
        </a-button>
        <div>上传总进度</div>
+       {{totalPercent}}
        <a-progress :percent="50" status="active"></a-progress>
    </div>
 </template>
 
 <script>
-    import { reactive, ref } from 'vue'
+    import { reactive, ref, computed  } from 'vue'
     import { createChunkListsWithHash,uploadChunks } from "./uploadFile";
 
     export default {
@@ -18,11 +19,19 @@
         setup() {
             const fileData = ref(null);
             const chunkLists = ref([]);
+            const totalPercent = ref(0);
+
+            /*computed*/
+            totalPercent.value = computed(() => {
+                return fileData.value.size;
+            });
+
+
             /*events*/
             const handleChange = (e) => {
                 const [file] = e.target.files;
                 fileData.value = file;
-                chunkLists.value = createChunkListsWithHash(file, chunkLists);
+                chunkLists.value = createChunkListsWithHash(file);
             };
             const submit = async () => {
                 try {
@@ -34,6 +43,7 @@
             return {
                 handleChange,
                 submit,
+                totalPercent
             }
         }
     }
